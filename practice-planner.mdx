@@ -1,0 +1,129 @@
+---
+title: Practice Planner
+---
+
+import Callout from "@mintlify/components/Callout";
+
+# Practice Planner Documentation
+
+<Callout type="info">
+  This page documents the current setup, logic, and open questions for the
+  Practice Planner system.
+</Callout>
+
+## Current Setup
+
+- **Videos** are pulled from storage `drills/foldername`.
+- Google Sheet contains title, description, and link:
+  - Link is currently to the MyTPI website for the drill.
+  - If using MyTPI video, export the embedded video link and add to the spreadsheet.
+  - This allows loading the video in an iframe or media player.
+  - This approach means no longer using storage videos (which were placeholders); refactor storage to reference the CSV file for video links.
+- If the drill does not exist in `practice_activities.csv`, fetch from `drills.csv` and label golf areas as "off the tee".
+  - Prefer using `practice_activities.csv` as it has more relevant fields.
+- Saved practice plans are stored as a document in a subcollection under the user's document.
+
+## Open Questions
+
+- Is the "social media golf drill database" the desired DB to pull drills from, or is it the "golf drill database"?
+- What is the difference between drills and games in `drills.csv` vs `practice_activities.csv`?
+  - When should each be used? How do they relate to plan generation?
+- What about plus handicaps?
+
+## Things to Add / To-Do
+
+- Remove equipment field. ✅
+  - (But don't remove, as it prevents assigning drills requiring unavailable tools.)
+- Dropdown for time available. ✅
+- Can't click "not sure" if others are selected. ✅
+- Is question 5 needed? ✅
+- Replace 5 with 9. ✅
+- Mobile responsiveness. ✅
+- Adjust time barriers to a slider from 30 minutes to 5 hours. ❗
+- Talk to Jerome about question 7 and fix boxes to match CSV. ❓
+- Figure out if activity list is still needed. ❓
+- Play with iframes and research embedded social media clips for frontend. ❓
+
+## Practice Plan Generation Logic
+
+1. **generatePracticePlan(userInput)**
+   - `userInput` example:
+     ```js
+     {
+       handicap: parseInt(formData.handicap, 10),
+       daysAvailable: parseInt(formData.daysAvailable, 10),
+       timePerDay: parseInt(formData.timePerDay, 10),
+       biggestMisses: formData.biggestMisses || [],
+       contactIssues: formData.contactIssues || [],
+       desiredBallFlight: formData.desiredBallFlight || '',
+       clubsToImprove: formData.clubsToImprove || [],
+     }
+     ```
+   - Get drills from `drills.csv` (will change to new spreadsheet when ready)
+   - Practice activities drills are deprecated?
+2. **generatePracticePlanLogic(userInput, drills, practiceActivities?)**
+   - **assignDifficultyLevel(handicap)**
+     - Low: handicap ≤ 9
+     - Medium: 10 ≤ handicap < 20
+     - High: handicap > 20
+   - **filterDrills(drills, difficultyLevel)**
+     - Remove logic for equipment
+     - Instead of L1-L4, use high/medium/low (columns o, p, q)
+     - Return drills matching only difficulty, then filter further by other inputs
+   - **filterActivities(activities, equipment)**
+     - May be deprecated
+   - **scoreDrills(drills, biggestMisses, contactIssues, desiredBallFlight)**
+     - Previous: Score by keyword matches in description
+     - Potential: Also search columns for ball flight/contact issues (marked with 'x')
+   - **allocateDrillsToDays(scoredDrills, filteredActivities, daysAvailable, timePerDay, difficultClubs, clubsToImprove)**
+     - Parse `timePerDay`
+       - Potential: Allocate all time to drills if activities are deprecated
+     - Parse `clubsToImprove` into `focusClubs`
+       - Potential: Only use `clubsToImprove` (remove `difficultClubs`)
+     - Rank clubs by priority (from questionnaire)
+     - Build `allAvailableDrills` by club
+       - Use 'x' in "Applies to which club or clubs" column
+       - Remove duplicates, normalize titles
+     - Compute `totalDrillTime`, `averageDrillDuration`, `maxAssignmentsPerDrill`
+     - Track assignments per activity/drill
+     - For each day, assign drills by club priority, avoiding duplicates and spreading out repeats
+     - Store day plans under `practicePlan["Day ${day}"]`
+     - Return `practicePlan`
+
+## Outstanding Tasks
+
+- Fill out new spreadsheet and add to bucket (Drake, in progress) ✅
+- Adjust time barriers to slider (Royce, todo)
+- Change all questions to Drake's new questions (Royce, todo)
+- Figure out if activity list is still needed ❓
+- Play with iframes and research embedded social media clips for frontend ❓
+
+## New Questionnaire
+
+- What is your current handicap? ✅ (check bug with default value)
+- Which clubs do you have available? (Select all that apply; rework existing question)
+- Which clubs do you want to improve the most? (Rank 1-5; not all required)
+- Which equipment items do you have available? (Select all that apply) ✅
+- Where are you able to practice? (Indoor, Outdoor, Course, Range, Putting Green, Chipping Green)
+- What swing problem areas do you need help with? (Mark all that apply; maybe a "not sure" box)
+- What ball flight issues are you experiencing? (Slicing, Hooking, Pull, Push) ✅
+- Help with contact issues? (Topping, Fat Shots, Thin Shots, Heel, Toe; rework options)
+- How many days per week can you practice? ✅
+- How much time can you dedicate to practice each day? (min 30 minutes) ✅
+
+### Example `response.body` from questionnaire
+
+```json
+{
+  "handicap": integer,
+  "Clubs_available": [string],
+  "Clubs_improved": [string],
+  "equipment": [string],
+  "locations": [string],
+  "problem_areas": [string],
+  "ball_flight": [string],
+  "Contact_issues": [string],
+  "Days": integer,
+  "time": integer
+}
+```
