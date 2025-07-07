@@ -1,115 +1,230 @@
 ---
-title: Practice Planner
+title: "Practice Planner"
 ---
 
 import Callout from "@mintlify/components/Callout";
 
 # Practice Planner Documentation
 
-<Callout type="info">
+<Info>
   This page documents the current setup, logic, and open questions for the
   Practice Planner system.
-</Callout>
+</Info>
 
-## Current Setup
+## <Icon icon="table-layout" size={24} />  Current Setup
 
-- **Videos** are pulled from storage `drills/foldername`.
-- Google Sheet contains title, description, and link:
-  - Link is currently to the MyTPI website for the drill.
-  - If using MyTPI video, export the embedded video link and add to the spreadsheet.
-  - This allows loading the video in an iframe or media player.
-  - This approach means no longer using storage videos (which were placeholders); refactor storage to reference the CSV file for video links.
-- If the drill does not exist in `practice_activities.csv`, fetch from `drills.csv` and label golf areas as "off the tee".
-  - Prefer using `practice_activities.csv` as it has more relevant fields.
-- Saved practice plans are stored as a document in a subcollection under the user's document.
+<Steps>
+  <Step title="**Videos** are pulled from storage `drills/foldername`">
+    
+  </Step>
+  <Step title="Google Sheet contains title, description, and link:`">
+    - Link is currently to the MyTPI website for the drill.
+    - If using MyTPI video, export the embedded video link and add to the spreadsheet.
+    - This allows loading the video in an iframe or media player.
+    - This approach means no longer using storage videos (which were placeholders); refactor storage to reference the CSV file for video links.
+  </Step>
+  <Step title="If the drill does not exist in `practice_activities.csv`, fetch from `drills.csv` and label golf areas as 'off the tee'">
+    - Prefer using `practice_activities.csv` as it has more relevant fields.
+  </Step>
+  <Step title="Saved practice plans are stored as a document in a subcollection under the user's document.">
+    
+  </Step>
+</Steps>
 
-## Open Questions
+## <Icon icon="question" size={24} /> Open Questions
 
-- Is the "social media golf drill database" the desired DB to pull drills from, or is it the "golf drill database"?
-- What is the difference between drills and games in `drills.csv` vs `practice_activities.csv`?
-  - When should each be used? How do they relate to plan generation?
-- What about plus handicaps?
+<Info>
+  Is the "social media golf drill database" the desired DB to pull drills from, or is it the "golf drill database"?
+</Info>
 
-## Things to Add / To-Do
+<Info>
+  What is the difference between drills and games in `drills.csv` vs `practice_activities.csv`?
+</Info>
 
-- Remove equipment field. ✅
-  - (But don't remove, as it prevents assigning drills requiring unavailable tools.)
-- Dropdown for time available. ✅
-- Can't click "not sure" if others are selected. ✅
-- Is question 5 needed? ✅
-- Replace 5 with 9. ✅
-- Mobile responsiveness. ✅
-- Adjust time barriers to a slider from 30 minutes to 5 hours. ❗
-- Talk to Jerome about question 7 and fix boxes to match CSV. ❓
-- Figure out if activity list is still needed. ❓
+<Info>
+  When should each be used? How do they relate to plan generation?
+</Info>
+
+<Info>
+  What about plus handicaps?
+</Info>
+
+## <Icon icon="check" size={28} />  Things to Add  
+
+<CardGroup cols={2}>
+  <Card title="Remove equipment field. " icon="exclamation">
+    - Make sure to remove equipment field
+
+      <Update label="07/06/2025" description>
+        In Progress
+      </Update>
+      <Warning>
+        Priority: Medium
+      </Warning>
+  </Card>
+  <Card title="Dropdown for time available." icon="exclamation">
+    # In questionaire make sure time is now a drop down
+
+    <Update label="07/02/2025">
+      In Progress
+    </Update>
+    <Warning>
+      Priority: Medium
+    </Warning>
+  </Card>
+  <Card title="Can't click 'not sure' if others are selected." icon="exclamation">
+    Make sure to block other options when not sure is selected and have it disabled vice versa.
+
+    <Update label="07/06/2025" description>
+      Not Started
+    </Update>
+    <Tip>
+      Priority: Low
+    </Tip>
+  </Card>
+  <Card title="Adjust time barriers to a slider from 30 minutes to 5 hours." icon="exclamation">
+    Important and needs to go out soon
+
+    <Update label="07/06/2025" description>
+      In progress
+    </Update>
+    <Danger>
+      Priority High
+    </Danger>
+  </Card>
+  <Card title="Talk to Jerome about question 7 and fix boxes to match CSV." icon="exclamation">
+    <Update label="07/06/2025" description>
+      Not started
+    </Update>
+    <Danger>
+      Priority: High
+    </Danger>
+  </Card>
+  <Card title="Mobile responsiveness." icon="exclamation">
+    <Update label="07/06/2025" description>
+      Completed
+    </Update>
+    <Check>
+      Completed by Drake
+    </Check>
+  </Card>
+  <Card title="Figure out if activity list is still needed. " icon="exclamation">
+    Talk to Jerome to make sure
+
+    <Update label="07/06/2025" description>
+      In Progress
+    </Update>
+    <Tip>
+      Priority: low
+    </Tip>
+  </Card>
+</CardGroup>
+
 - Play with iframes and research embedded social media clips for frontend. ❓
 
-## Practice Plan Generation Logic
+## <Icon icon="lightbulb-exclamation" size={24} /> Practice Plan Generation Logic
 
-1. **generatePracticePlan(userInput)**
-   - `userInput` example:
-     ```js
-     {
-       handicap: parseInt(formData.handicap, 10),
-       daysAvailable: parseInt(formData.daysAvailable, 10),
-       timePerDay: parseInt(formData.timePerDay, 10),
-       biggestMisses: formData.biggestMisses || [],
-       contactIssues: formData.contactIssues || [],
-       desiredBallFlight: formData.desiredBallFlight || '',
-       clubsToImprove: formData.clubsToImprove || [],
-     }
-     ```
-   - Get drills from `drills.csv` (will change to new spreadsheet when ready)
-   - Practice activities drills are deprecated?
-2. **generatePracticePlanLogic(userInput, drills, practiceActivities?)**
-   - **assignDifficultyLevel(handicap)**
-     - Low: handicap ≤ 9
-     - Medium: 10 ≤ handicap < 20
-     - High: handicap > 20
-   - **filterDrills(drills, difficultyLevel)**
-     - Remove logic for equipment
-     - Instead of L1-L4, use high/medium/low (columns o, p, q)
-     - Return drills matching only difficulty, then filter further by other inputs
-   - **filterActivities(activities, equipment)**
-     - May be deprecated
-   - **scoreDrills(drills, biggestMisses, contactIssues, desiredBallFlight)**
-     - Previous: Score by keyword matches in description
-     - Potential: Also search columns for ball flight/contact issues (marked with 'x')
-   - **allocateDrillsToDays(scoredDrills, filteredActivities, daysAvailable, timePerDay, difficultClubs, clubsToImprove)**
-     - Parse `timePerDay`
-       - Potential: Allocate all time to drills if activities are deprecated
-     - Parse `clubsToImprove` into `focusClubs`
-       - Potential: Only use `clubsToImprove` (remove `difficultClubs`)
-     - Rank clubs by priority (from questionnaire)
-     - Build `allAvailableDrills` by club
-       - Use 'x' in "Applies to which club or clubs" column
-       - Remove duplicates, normalize titles
-     - Compute `totalDrillTime`, `averageDrillDuration`, `maxAssignmentsPerDrill`
-     - Track assignments per activity/drill
-     - For each day, assign drills by club priority, avoiding duplicates and spreading out repeats
-     - Store day plans under `practicePlan["Day ${day}"]`
-     - Return `practicePlan`
+<Steps>
+  <Step title="generatePracticePlan(userInput)">
+    - `userInput` example:
+
+      ```js
+      {
+        handicap: parseInt(formData.handicap, 10),
+        daysAvailable: parseInt(formData.daysAvailable, 10),
+        timePerDay: parseInt(formData.timePerDay, 10),
+        biggestMisses: formData.biggestMisses || [],
+        contactIssues: formData.contactIssues || [],
+        desiredBallFlight: formData.desiredBallFlight || '',
+        clubsToImprove: formData.clubsToImprove || [],
+      }
+      ```
+    - Get drills from `drills.csv` (will change to new spreadsheet when ready)
+    - Practice activities drills are deprecated?
+  </Step>
+  <Step title="generatePracticePlanLogic(userInput, drills, practiceActivities?)">
+    - **assignDifficultyLevel(handicap)**
+      - Low: handicap ≤ 9
+      - Medium: 10 ≤ handicap \< 20
+      - High: handicap \> 20
+    - **filterDrills(drills, difficultyLevel)**
+      - Remove logic for equipment
+      - Instead of L1-L4, use high/medium/low (columns o, p, q)
+      - Return drills matching only difficulty, then filter further by other inputs
+    - **filterActivities(activities, equipment)**
+      - May be deprecated
+    - **scoreDrills(drills, biggestMisses, contactIssues, desiredBallFlight)**
+      - Previous: Score by keyword matches in description
+      - Potential: Also search columns for ball flight/contact issues (marked with 'x')
+    - **allocateDrillsToDays(scoredDrills, filteredActivities, daysAvailable, timePerDay, difficultClubs, clubsToImprove)**
+      - Parse `timePerDay`
+        - Potential: Allocate all time to drills if activities are deprecated
+      - Parse `clubsToImprove` into `focusClubs`
+        - Potential: Only use `clubsToImprove` (remove `difficultClubs`)
+      - Rank clubs by priority (from questionnaire)
+      - Build `allAvailableDrills` by club
+        - Use 'x' in "Applies to which club or clubs" column
+        - Remove duplicates, normalize titles
+      - Compute `totalDrillTime`, `averageDrillDuration`, `maxAssignmentsPerDrill`
+      - Track assignments per activity/drill
+      - For each day, assign drills by club priority, avoiding duplicates and spreading out repeats
+      - Store day plans under `practicePlan["Day ${day}"]`
+      - Return `practicePlan`
+  </Step>
+</Steps>
 
 ## Outstanding Tasks
 
 - Fill out new spreadsheet and add to bucket (Drake, in progress) ✅
-- Adjust time barriers to slider (Royce, todo)
+- Adjust time barriers to slider
 - Change all questions to Drake's new questions (Royce, todo)
 - Figure out if activity list is still needed ❓
 - Play with iframes and research embedded social media clips for frontend ❓
 
 ## New Questionnaire
 
-- What is your current handicap? ✅ (check bug with default value)
-- Which clubs do you have available? (Select all that apply; rework existing question)
-- Which clubs do you want to improve the most? (Rank 1-5; not all required)
-- Which equipment items do you have available? (Select all that apply) ✅
-- Where are you able to practice? (Indoor, Outdoor, Course, Range, Putting Green, Chipping Green)
-- What swing problem areas do you need help with? (Mark all that apply; maybe a "not sure" box)
-- What ball flight issues are you experiencing? (Slicing, Hooking, Pull, Push) ✅
-- Help with contact issues? (Topping, Fat Shots, Thin Shots, Heel, Toe; rework options)
-- How many days per week can you practice? ✅
-- How much time can you dedicate to practice each day? (min 30 minutes) ✅
+<AccordionGroup>
+  <Accordion title="What is your current handicap? " icon="hashtag">
+    <Info>
+      User enters value on slider scale starting from \+5 to -30.
+    </Info>
+  </Accordion>
+  <Accordion title="Which clubs do you have available?" icon="golf-club">
+    <Info>
+      Select box for user to add all of the clubs they currently have in their bag.
+    </Info>
+  </Accordion>
+  <Accordion title="Which clubs do you want to improve the most? " icon="ranking-star">
+    <Info>
+      User ranks clubs selected from most to least wanting to improve.
+    </Info>
+  </Accordion>
+  <Accordion title="Which equipment items do you have available? " icon="screwdriver-wrench">
+    <Info>
+      User is presented again with select box with various tools and equipment they have available.
+    </Info>
+  </Accordion>
+  <Accordion title="What ball flight issues are you experiencing? " icon="plane-circle-xmark">
+    <Info>
+      User selects which of the flight patterns they are experiencing.
+    </Info>
+  </Accordion>
+  <Accordion title="What contact issues are you experiencing?" icon="golf-ball-tee">
+    <Info>
+      User selects different contact issues such as chunking, thinning, ect.
+    </Info>
+  </Accordion>
+  <Accordion title="How many days per week can you practice? " icon="calendar">
+    <Info>
+      User is presented a calendar and can build schedule of which days of the week they can realistically pracitce.
+    </Info>
+  </Accordion>
+  <Accordion title="How much time can you practice each day" icon="clock">
+    <Info>
+      User can set time boundaries on amount of hours and minutes they want to practice for per day.
+    </Info>
+  </Accordion>
+</AccordionGroup>
 
 ### Example `response.body` from questionnaire
 
