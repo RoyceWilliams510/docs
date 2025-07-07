@@ -19,6 +19,61 @@
     }
   ],
   "paths": {
+    "/updateDefaultPaymentMethod":{
+      "post":{
+        "description": "Deletes a single plant based on the ID supplied",
+        "requestBody": {
+          "description": "The ID of the new default payment method",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "paymentMethodId": { "type": "string", "description": "The ID" }
+                    }
+                  },
+                  "auth": {
+                    "type": "object",
+                    "properties": {
+                      "uid": { "type": "string", "description": "The ID of the user in firebase database" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Server response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/plants": {
       "get": {
         "description": "Returns all plants from the system that the user has access to",
@@ -127,44 +182,6 @@
             }
           }
         }
-      }
-    },
-    "/updateDefaultPaymentMethod":{
-      "post":{
-        "description": "Deletes a single plant based on the ID supplied",
-        "requestBody": {
-          "description": "The ID of the new default payment method",
-          "content": {
-            "application/json": {
-              "schema": {
-                "data.paymentMethodId":"The ID",
-                "auth.uid":"The ID of the user in firebase database"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Server reponse",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "success":"true"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
       }
     }
   },

@@ -1,0 +1,41 @@
+---
+title: Update Default Payment Method
+---
+
+**POST** `/updateDefaultPaymentMethod`
+
+Updates the default payment method for a Stripe customer. It also attempts to pay any unpaid invoices and reactivates subscriptions that were canceled due to non-payment. Non-payment typically occurs if a subscription renews and the users payment is no longer valid due to funds, an invalid card, etc.
+
+## Request Body
+
+Content-Type: `application/json`
+
+```json
+{
+  "data": {
+    "paymentMethodId": "string" // The ID of the new default payment method
+  },
+  "auth": {
+    "uid": "string" // The ID of the user in firebase database
+  }
+}
+```
+
+| Field                | Type   | Description                              |
+| -------------------- | ------ | ---------------------------------------- |
+| data.paymentMethodId | string | The ID of the new default payment method |
+| auth.uid             | string | The ID of the user in firebase database  |
+
+## Responses
+
+### 200: Success
+
+```json
+{
+  "success": true
+}
+```
+
+### 400: Unexpected Error
+
+Returns an error object. See [Error schema](../openapi.json) for details.
