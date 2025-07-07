@@ -128,6 +128,44 @@
           }
         }
       }
+    },
+    "/updateDefaultPaymentMethod":{
+      "post":{
+        "description": "Deletes a single plant based on the ID supplied",
+        "requestBody": {
+          "description": "The ID of the new default payment method",
+          "content": {
+            "application/json": {
+              "schema": {
+                "data.paymentMethodId":"The ID",
+                "auth.uid":"The ID of the user in firebase database"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Server reponse",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "success":"true"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+      }
     }
   },
   "webhooks": {
