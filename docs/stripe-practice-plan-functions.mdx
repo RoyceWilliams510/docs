@@ -1,0 +1,209 @@
+---
+title: "Stripe Practice Plan Subscription Functions"
+description: "Comprehensive guide to Stripe functions for managing practice plan subscriptions, including creation, verification, and cancellation."
+---
+
+# Stripe Practice Plan Subscription Functions
+
+<Info>
+  This page documents the core Stripe integration functions for managing
+  practice plan subscriptions, including free trials, verification, and
+  cancellation. Use this as a template for documenting similar backend
+  functions.
+</Info>
+
+## Overview
+
+This guide covers the following functions:
+
+- `createPracticePlanSubscription`
+- `verifySubscription`
+- `endPracticePlanTrial`
+
+Each function includes step-by-step logic, key features, and error handling considerations.
+
+---
+
+## createPracticePlanSubscription
+
+Creates a Stripe subscription for a practice plan, supporting both free trial and regular subscription flows.
+
+<Steps>
+<Step title="Check Free Trial Status">
+  Determine if the user has already used their free trial.
+</Step>
+<Step title="Get or Create Stripe Customer">
+  Retrieve or create a Stripe customer ID for the user.
+</Step>
+<Step title="Create Subscription">
+  <Tabs>
+    <Tab title="Free Trial">
+      <CodeGroup>
+      ```javascript
+      const subscription = await stripe.subscriptions.create({
+        customer: customerId,
+        items: [{ price: 'price_1Qn6rtRw3pH7S33VxIQWy6JG' }],
+        trial_period_days: 7,
+        payment_settings: { save_default_payment_method: "on_subscription" },
+        metadata: { uid: userId, product: "Free-trial-practice-plan" }
+      });
+      ```
+      </CodeGroup>
+      Mark the trial as used in Firestore:
+      ```javascript
+      await admin.firestore().collection("profile").doc(userId).set(
+        { freeTrialUsed: true },
+        { merge: true }
+      );
+      ```
+    </Tab>
+    <Tab title="Regular Subscription">
+      <CodeGroup>
+      ```javascript
+      const subscription = await stripe.subscriptions.create({
+        customer: customerId,
+        items: [{ price: 'price_1Qn6rtRw3pH7S33VxIQWy6JG' }],
+        payment_behavior: "default_incomplete",
+        payment_settings: { save_default_payment_method: "on_subscription" },
+        metadata: { uid: userId, product: "Free-trial-practice-plan" }
+      });
+      ```
+      </CodeGroup>
+    </Tab>
+  </Tabs>
+</Step>
+<Step title="Record Subscription">
+  Save subscription details in the Firestore `practicePlanSubscriptions` collection.
+</Step>
+<Step title="Return Data">
+  Return relevant data to the client:
+  <ul>
+    <li>For trials: subscription ID and setup intent client secret</li>
+    <li>For regular: subscription ID and payment intent client secret</li>
+  </ul>
+</Step>
+</Steps>
+
+---
+
+## verifySubscription
+
+Verifies if a user has an active subscription by checking both Stripe and Firestore.
+
+<Steps>
+  <Step title="Authentication Check">Ensure the user is authenticated.</Step>
+  <Step title="User Profile Check">
+    Retrieve the user's profile from Firestore.
+  </Step>
+  <Step title="Stripe Customer Handling">
+    <AccordionGroup>
+      <Accordion title="No Stripe Customer ID">
+        <ul>
+          <li>Create a new Stripe customer.</li>
+          <li>Update Firestore with the new customer ID.</li>
+          <li>
+            Return:{" "}
+            <code>
+              {" "}
+              hasSubscription: false, message: "No active subscription found", hasTrial:
+              false{" "}
+            </code>
+          </li>
+        </ul>
+      </Accordion>
+      <Accordion title="Existing Stripe Customer ID">
+        <ul>
+          <li>
+            Call <code>checkUserSubscription</code> with customer ID and
+            required plan ID.
+          </li>
+          <li>Return subscription status.</li>
+        </ul>
+      </Accordion>
+    </AccordionGroup>
+  </Step>
+  <Step title="checkUserSubscription Helper">
+    <ul>
+      <li>Retrieve customer from Stripe.</li>
+      <li>Check for active and trial subscriptions.</li>
+      <li>Return detailed subscription status object.</li>
+    </ul>
+  </Step>
+</Steps>
+
+<Tip>
+  Handles missing Stripe customers, checks both active and trial subscriptions,
+  and maintains data consistency between Firestore and Stripe.
+</Tip>
+
+---
+
+## endPracticePlanTrial
+
+Cancels a user's trial subscription for the practice plan, updating both Stripe and Firestore.
+
+<Steps>
+<Step title="Initial Checks">
+  Retrieve the user document from Firestore.
+  <Warning>
+    Throw an error if the user is not found.
+  </Warning>
+</Step>
+<Step title="Subscription Lookup">
+  List Stripe subscriptions for the customer with status <code>trialing</code>.
+  Find the subscription matching the practice plan product.
+</Step>
+<Step title="Cancel Subscription">
+  Cancel the subscription in Stripe:
+  <CodeGroup>
+  ```javascript
+  const canceledSubscription = await stripe.subscriptions.cancel(
+    practicePlanSub.id,
+    { prorate: false, invoice_now: true }
+  );
+  ```
+  </CodeGroup>
+</Step>
+<Step title="Update Firestore">
+  Update the corresponding Firestore document:
+  <CodeGroup>
+  ```javascript
+  await querySnapshot.docs[0].ref.update({
+    status: 'canceled',
+    endDate: admin.firestore.FieldValue.serverTimestamp()
+  });
+  ```
+  </CodeGroup>
+</Step>
+<Step title="Return Result">
+  Return the cancellation result to the client.
+</Step>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Key Features">
+    <ul>
+      <li>Immediately cancels trial subscription</li>
+      <li>Updates both Stripe and Firestore records</li>
+      <li>Handles error cases (no subscription found, invalid customer)</li>
+      <li>No prorating of charges</li>
+      <li>Forces immediate invoice generation</li>
+    </ul>
+  </Accordion>
+  <Accordion title="Error Handling">
+    <ul>
+      <li>Checks for user existence</li>
+      <li>Validates subscription existence</li>
+      <li>Wraps all operations in try/catch</li>
+      <li>Returns detailed error messages</li>
+    </ul>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+<Check>
+  You now have a reusable, well-structured MDX boilerplate for documenting
+  Stripe-related backend functions. Adapt the sections and components as needed
+  for your own functions.
+</Check>{" "}

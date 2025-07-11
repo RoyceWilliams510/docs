@@ -9,45 +9,40 @@ import Callout from "@mintlify/components/Callout";
   Practice Planner system.
 </Info>
 
-## <Icon icon="table-layout" size={24} />  Current Setup
+## <Icon icon="table-layout" size={24} /> Current Setup
 
 <Steps>
-  <Step title="**Videos** are pulled from storage `drills/foldername`">
-    
-  </Step>
+  <Step title="Videos are pulled from storage `drills/foldername`"></Step>
   <Step title="Google Sheet contains title, description, and link:`">
-    - Link is currently to the MyTPI website for the drill.
-    - If using MyTPI video, export the embedded video link and add to the spreadsheet.
-    - This allows loading the video in an iframe or media player.
-    - This approach means no longer using storage videos (which were placeholders); refactor storage to reference the CSV file for video links.
+    - Link is currently to the MyTPI website for the drill. - If using MyTPI
+    video, export the embedded video link and add to the spreadsheet. - This
+    allows loading the video in an iframe or media player. - This approach means
+    no longer using storage videos (which were placeholders); refactor storage
+    to reference the CSV file for video links.
   </Step>
   <Step title="If the drill does not exist in `practice_activities.csv`, fetch from `drills.csv` and label golf areas as 'off the tee'">
     - Prefer using `practice_activities.csv` as it has more relevant fields.
   </Step>
-  <Step title="Saved practice plans are stored as a document in a subcollection under the user's document.">
-    
-  </Step>
+  <Step title="Saved practice plans are stored as a document in a subcollection under the user's document."></Step>
 </Steps>
 
 ## <Icon icon="question" size={24} /> Open Questions
 
 <Info>
-  Is the "social media golf drill database" the desired DB to pull drills from, or is it the "golf drill database"?
+  Is the "social media golf drill database" the desired DB to pull drills from,
+  or is it the "golf drill database"?
 </Info>
 
 <Info>
-  What is the difference between drills and games in `drills.csv` vs `practice_activities.csv`?
+  What is the difference between drills and games in `drills.csv` vs
+  `practice_activities.csv`?
 </Info>
 
-<Info>
-  When should each be used? How do they relate to plan generation?
-</Info>
+<Info>When should each be used? How do they relate to plan generation?</Info>
 
-<Info>
-  What about plus handicaps?
-</Info>
+<Info>What about plus handicaps?</Info>
 
-## <Icon icon="check" size={28} />  Things to Add
+## <Icon icon="check" size={28} /> Things to Add
 
 <CardGroup cols={2}>
   <Card title="Remove equipment field. " icon="exclamation">
@@ -59,6 +54,7 @@ import Callout from "@mintlify/components/Callout";
       <Warning>
         Priority: Medium
       </Warning>
+
   </Card>
   <Card title="Dropdown for time available." icon="exclamation">
     # In questionaire make sure time is now a drop down
@@ -69,6 +65,7 @@ import Callout from "@mintlify/components/Callout";
     <Warning>
       Priority: Medium
     </Warning>
+
   </Card>
   <Card title="Can't click 'not sure' if others are selected." icon="exclamation">
     Make sure to block other options when not sure is selected and have it disabled vice versa.
@@ -79,6 +76,7 @@ import Callout from "@mintlify/components/Callout";
     <Tip>
       Priority: Low
     </Tip>
+
   </Card>
   <Card title="Adjust time barriers to a slider from 30 minutes to 5 hours." icon="exclamation">
     Important and needs to go out soon
@@ -89,6 +87,7 @@ import Callout from "@mintlify/components/Callout";
     <Danger>
       Priority High
     </Danger>
+
   </Card>
   <Card title="Talk to Jerome about question 7 and fix boxes to match CSV." icon="exclamation">
     <Update label="07/06/2025" description>
@@ -115,6 +114,7 @@ import Callout from "@mintlify/components/Callout";
     <Tip>
       Priority: low
     </Tip>
+
   </Card>
 </CardGroup>
 
@@ -139,6 +139,7 @@ import Callout from "@mintlify/components/Callout";
       ```
     - Get drills from `drills.csv` (will change to new spreadsheet when ready)
     - Practice activities drills are deprecated?
+
   </Step>
   <Step title="generatePracticePlanLogic(userInput, drills, practiceActivities?)">
     - **assignDifficultyLevel(handicap)**
@@ -183,43 +184,57 @@ import Callout from "@mintlify/components/Callout";
 
 <AccordionGroup>
   <Accordion title="What is your current handicap? " icon="hashtag">
-    <Info>
-      User enters value on slider scale starting from \+5 to -30.
-    </Info>
+    <Info>User enters value on slider scale starting from \+5 to -30.</Info>
   </Accordion>
   <Accordion title="Which clubs do you have available?" icon="golf-club">
     <Info>
-      Select box for user to add all of the clubs they currently have in their bag.
+      Select box for user to add all of the clubs they currently have in their
+      bag.
     </Info>
   </Accordion>
-  <Accordion title="Which clubs do you want to improve the most? " icon="ranking-star">
+  <Accordion
+    title="Which clubs do you want to improve the most? "
+    icon="ranking-star"
+  >
     <Info>
       User ranks clubs selected from most to least wanting to improve.
     </Info>
   </Accordion>
-  <Accordion title="Which equipment items do you have available? " icon="screwdriver-wrench">
+  <Accordion
+    title="Which equipment items do you have available? "
+    icon="screwdriver-wrench"
+  >
     <Info>
-      User is presented again with select box with various tools and equipment they have available.
+      User is presented again with select box with various tools and equipment
+      they have available.
     </Info>
   </Accordion>
-  <Accordion title="What ball flight issues are you experiencing? " icon="plane-circle-xmark">
+  <Accordion
+    title="What ball flight issues are you experiencing? "
+    icon="plane-circle-xmark"
+  >
     <Info>
       User selects which of the flight patterns they are experiencing.
     </Info>
   </Accordion>
-  <Accordion title="What contact issues are you experiencing?" icon="golf-ball-tee">
+  <Accordion
+    title="What contact issues are you experiencing?"
+    icon="golf-ball-tee"
+  >
     <Info>
       User selects different contact issues such as chunking, thinning, ect.
     </Info>
   </Accordion>
   <Accordion title="How many days per week can you practice? " icon="calendar">
     <Info>
-      User is presented a calendar and can build schedule of which days of the week they can realistically pracitce.
+      User is presented a calendar and can build schedule of which days of the
+      week they can realistically pracitce.
     </Info>
   </Accordion>
   <Accordion title="How much time can you practice each day" icon="clock">
     <Info>
-      User can set time boundaries on amount of hours and minutes they want to practice for per day.
+      User can set time boundaries on amount of hours and minutes they want to
+      practice for per day.
     </Info>
   </Accordion>
 </AccordionGroup>
