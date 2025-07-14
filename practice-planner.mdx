@@ -2,7 +2,6 @@
 title: "Practice Planner Documentation"
 ---
 
-import Callout from "@mintlify/components/Callout";
 
 <Info>
   This page documents the current setup, logic, and open questions for the
@@ -57,14 +56,14 @@ import Callout from "@mintlify/components/Callout";
 
   </Card>
   <Card title="Dropdown for time available." icon="exclamation">
-    # In questionaire make sure time is now a drop down
+    - In questionaire make sure time is now a drop down
 
-    <Update label="07/02/2025">
-      In Progress
-    </Update>
-    <Warning>
-      Priority: Medium
-    </Warning>
+      <Update label="07/02/2025">
+        In Progress
+      </Update>
+      <Warning>
+        Priority: Medium
+      </Warning>
 
   </Card>
   <Card title="Can't click 'not sure' if others are selected." icon="exclamation">
@@ -151,9 +150,9 @@ import Callout from "@mintlify/components/Callout";
       - Instead of L1-L4, use high/medium/low (columns o, p, q)
       - Return drills matching only difficulty, then filter further by other inputs
     - **filterActivities(activities, equipment)**
-      - May be deprecated
+      - ~May be deprecated~
     - **scoreDrills(drills, biggestMisses, contactIssues, desiredBallFlight)**
-      - Previous: Score by keyword matches in description
+      - ~Previous: Score by keyword matches in description~
       - Potential: Also search columns for ball flight/contact issues (marked with 'x')
     - **allocateDrillsToDays(scoredDrills, filteredActivities, daysAvailable, timePerDay, difficultClubs, clubsToImprove)**
       - Parse `timePerDay`

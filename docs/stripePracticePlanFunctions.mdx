@@ -1,5 +1,5 @@
 ---
-title: "Stripe Practice Plan Subscription Functions"
+title: "Stripe Functions"
 description: "Comprehensive guide to Stripe functions for managing practice plan subscriptions, including creation, verification, and cancellation."
 ---
 
@@ -24,7 +24,7 @@ Each function includes step-by-step logic, key features, and error handling cons
 
 ---
 
-## createPracticePlanSubscription
+## `createPracticePlanSubscription`
 
 Creates a Stripe subscription for a practice plan, supporting both free trial and regular subscription flows.
 
@@ -83,14 +83,14 @@ Creates a Stripe subscription for a practice plan, supporting both free trial an
   </Step>
   <Step title="Return Data">
     Return relevant data to the client:
-    For trials: subscription ID and setup intent client secret
-    For regular: subscription ID and payment intent client secret
+    - For trials: subscription ID and setup intent client secret
+    - For regular: subscription ID and payment intent client secret
   </Step>
 </Steps>
 
 ---
 
-## verifySubscription
+## `verifySubscription`
 
 Verifies if a user has an active subscription by checking both Stripe and Firestore.
 
@@ -126,7 +126,7 @@ Verifies if a user has an active subscription by checking both Stripe and Firest
 
 ---
 
-## endPracticePlanTrial
+## `endPracticePlanTrial`
 
 Cancels a user's trial subscription for the practice plan, updating both Stripe and Firestore.
 

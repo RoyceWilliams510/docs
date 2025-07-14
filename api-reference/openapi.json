@@ -1,272 +1,167 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Fake School API",
+      "version": "1.0.0",
+      "description": "A fake school API for testing CRUD operations on students, teachers, subjects, classes, and enrollments."
     },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-  "paths": {
-    "/updateDefaultPaymentMethod":{
-      "post":{
-        "description": "Deletes a single plant based on the ID supplied",
-        "requestBody": {
-          "description": "The ID of the new default payment method",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "type": "object",
-                    "properties": {
-                      "paymentMethodId": { "type": "string", "description": "The ID" }
-                    }
-                  },
-                  "auth": {
-                    "type": "object",
-                    "properties": {
-                      "uid": { "type": "string", "description": "The ID of the user in firebase database" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required": true
+    "servers": [
+      { "url": "https://student-api-1owh.onrender.com/" }
+    ],
+    "paths": {
+      "/students": {
+        "get": {
+          "summary": "List all students",
+          "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Student" } } } } } }
         },
-        "responses": {
-          "200": {
-            "description": "Server response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean" }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+        "post": {
+          "summary": "Create a student",
+          "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StudentInput" } } } },
+          "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Student" } } } } }
         }
       },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
+      "/students/{id}": {
+        "get": {
+          "summary": "Get a student by ID",
+          "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ],
+          "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Student" } } } }, "404": { "description": "Not found" } }
         },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          }
+        "put": {
+          "summary": "Update a student",
+          "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ],
+          "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StudentInput" } } } },
+          "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Student" } } } }, "404": { "description": "Not found" } }
         },
-        "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
+        "delete": {
+          "summary": "Delete a student",
+          "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ],
+          "responses": { "200": { "description": "OK" }, "404": { "description": "Not found" } }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
+      "/teachers": {
+        "get": { "summary": "List all teachers", "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Teacher" } } } } } } },
+        "post": { "summary": "Create a teacher", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TeacherInput" } } } }, "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Teacher" } } } } } }
       },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
+      "/teachers/{id}": {
+        "get": { "summary": "Get a teacher by ID", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Teacher" } } } }, "404": { "description": "Not found" } } },
+        "put": { "summary": "Update a teacher", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TeacherInput" } } } }, "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Teacher" } } } }, "404": { "description": "Not found" } } },
+        "delete": { "summary": "Delete a teacher", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "responses": { "200": { "description": "OK" }, "404": { "description": "Not found" } } }
+      },
+      "/subjects": {
+        "get": { "summary": "List all subjects", "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Subject" } } } } } } },
+        "post": { "summary": "Create a subject", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SubjectInput" } } } }, "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Subject" } } } } } }
+      },
+      "/subjects/{id}": {
+        "get": { "summary": "Get a subject by ID", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Subject" } } } }, "404": { "description": "Not found" } } },
+        "put": { "summary": "Update a subject", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SubjectInput" } } } }, "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Subject" } } } }, "404": { "description": "Not found" } } },
+        "delete": { "summary": "Delete a subject", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "responses": { "200": { "description": "OK" }, "404": { "description": "Not found" } } }
+      },
+      "/classes": {
+        "get": { "summary": "List all classes", "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Class" } } } } } } },
+        "post": { "summary": "Create a class", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClassInput" } } } }, "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Class" } } } } } }
+      },
+      "/classes/{id}": {
+        "get": { "summary": "Get a class by ID", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Class" } } } }, "404": { "description": "Not found" } } },
+        "put": { "summary": "Update a class", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClassInput" } } } }, "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Class" } } } }, "404": { "description": "Not found" } } },
+        "delete": { "summary": "Delete a class", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "responses": { "200": { "description": "OK" }, "404": { "description": "Not found" } } }
+      },
+      "/enrollments": {
+        "get": { "summary": "List all enrollments", "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Enrollment" } } } } } } },
+        "post": { "summary": "Create an enrollment", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EnrollmentInput" } } } }, "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Enrollment" } } } } } }
+      },
+      "/enrollments/{id}": {
+        "get": { "summary": "Get an enrollment by ID", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Enrollment" } } } }, "404": { "description": "Not found" } } },
+        "put": { "summary": "Update an enrollment", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EnrollmentInput" } } } }, "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Enrollment" } } } }, "404": { "description": "Not found" } } },
+        "delete": { "summary": "Delete an enrollment", "parameters": [ { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } } ], "responses": { "200": { "description": "OK" }, "404": { "description": "Not found" } } }
       }
     },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+    "components": {
+      "schemas": {
+        "Student": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer" },
+            "name": { "type": "string" },
+            "email": { "type": "string" }
+          },
+          "required": ["id", "name", "email"]
+        },
+        "StudentInput": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "email": { "type": "string" }
+          },
+          "required": ["name", "email"]
+        },
+        "Teacher": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer" },
+            "name": { "type": "string" },
+            "email": { "type": "string" }
+          },
+          "required": ["id", "name", "email"]
+        },
+        "TeacherInput": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "email": { "type": "string" }
+          },
+          "required": ["name", "email"]
+        },
+        "Subject": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer" },
+            "name": { "type": "string" }
+          },
+          "required": ["id", "name"]
+        },
+        "SubjectInput": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" }
+          },
+          "required": ["name"]
+        },
+        "Class": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer" },
+            "name": { "type": "string" },
+            "teacher_id": { "type": "integer" },
+            "subject_id": { "type": "integer" }
+          },
+          "required": ["id", "name", "teacher_id", "subject_id"]
+        },
+        "ClassInput": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "teacher_id": { "type": "integer" },
+            "subject_id": { "type": "integer" }
+          },
+          "required": ["name", "teacher_id", "subject_id"]
+        },
+        "Enrollment": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer" },
+            "student_id": { "type": "integer" },
+            "class_id": { "type": "integer" }
+          },
+          "required": ["id", "student_id", "class_id"]
+        },
+        "EnrollmentInput": {
+          "type": "object",
+          "properties": {
+            "student_id": { "type": "integer" },
+            "class_id": { "type": "integer" }
+          },
+          "required": ["student_id", "class_id"]
+        }
       }
     }
-  }
-}
+  } 
